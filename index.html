@@ -3,250 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dozens Unique Pattern Engine</title>
+    <title>Dozen Pair Pattern Engine</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --primary: #38bdf8;
-            --accent: #4ade80;
-            --danger: #f43f5e;
-            --text: #f8fafc;
+            --bg: #0b0f19;
+            --card: #161e2d;
+            --primary: #00d2ff;
+            --accent: #00ff88;
+            --danger: #ff0055;
+            --text: #ffffff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 15px; }
-        .container { max-width: 480px; margin: 0 auto; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
 
-        header { text-align: center; margin-bottom: 20px; }
-        h1 { color: var(--primary); font-size: 1.4rem; text-transform: uppercase; letter-spacing: 2px; }
+        header { text-align: center; margin-bottom: 25px; }
+        h1 { font-size: 1.5rem; color: var(--primary); letter-spacing: 1.5px; }
 
-        /* Prediction Card */
-        .engine-card {
+        /* Prediction Dashboard */
+        .prediction-card {
             background: var(--card);
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        }
-
-        .status-light {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 4px 12px;
+            border: 2px solid #2d3748;
             border-radius: 20px;
-            background: #0f172a;
-            color: #64748b;
-            border: 1px solid #334155;
-            display: inline-block;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
             margin-bottom: 20px;
         }
 
-        .status-light.active {
-            color: var(--accent);
-            border-color: var(--accent);
-            background: rgba(74, 222, 128, 0.1);
+        .status-header {
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            color: #718096;
+            text-transform: uppercase;
         }
 
-        .prediction-display {
+        .status-header.active { color: var(--accent); }
+
+        .dozen-pair-display {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
         }
 
-        .dozen-slot {
-            flex: 1;
-            background: #0f172a;
-            border: 2px solid #334155;
-            border-radius: 12px;
-            padding: 20px 10px;
-            transition: all 0.3s ease;
+        .dozen-box {
+            width: 100px;
+            height: 100px;
+            background: #0b0f19;
+            border: 3px solid #2d3748;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .dozen-slot.highlight {
+        .dozen-box.hit {
             border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+            background: rgba(0, 210, 255, 0.1);
+            transform: scale(1.05);
         }
 
-        .dozen-slot .val { font-size: 2.5rem; font-weight: 900; color: white; display: block; }
-        .dozen-slot .tag { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; }
+        .dozen-box .num-val { font-size: 3rem; font-weight: 900; }
+        .dozen-box .label { font-size: 0.6rem; color: #4a5568; margin-top: -5px; }
 
-        .sequence-footer {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            background: rgba(0,0,0,0.2);
-            padding: 8px;
-            border-radius: 8px;
+        .seq-tag {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: #a0aec0;
+            display: inline-block;
         }
 
-        /* Controls */
-        .input-bar { display: flex; gap: 8px; margin-bottom: 15px; }
-        .text-input { 
-            flex: 1; background: var(--card); border: 1px solid #334155; 
-            border-radius: 8px; padding: 12px; color: white; 
+        /* Inputs */
+        .input-area { display: flex; gap: 10px; margin-bottom: 15px; }
+        .bulk-box { 
+            flex: 1; background: var(--card); border: 1px solid #2d3748;
+            border-radius: 10px; padding: 12px; color: white;
         }
-        
-        .btn { padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-go { background: var(--primary); color: #0f172a; }
-        .btn-reset { background: var(--danger); color: white; }
+        .btn { padding: 12px 20px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; }
+        .btn-load { background: var(--primary); color: #000; }
+        .btn-clr { background: var(--danger); color: #fff; }
 
-        .grid {
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
-            background: var(--card); padding: 12px; border-radius: 12px; margin-bottom: 15px;
+        .numpad {
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
+            background: var(--card); padding: 15px; border-radius: 15px;
         }
-        .num {
-            aspect-ratio: 1; background: #334155; border: none;
-            color: white; font-weight: bold; border-radius: 6px; cursor: pointer;
+        .n-btn {
+            aspect-ratio: 1; background: #2d3748; border: none; color: white;
+            font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 1.1rem;
         }
-        .num.zero { background: #16a34a; grid-column: span 1; }
-        .num:active { background: var(--primary); }
+        .n-btn.zero { background: #2f855a; }
+        .n-btn:active { background: var(--primary); color: #000; }
 
-        .log {
-            display: flex; flex-wrap: wrap; gap: 6px; padding: 10px;
-            background: rgba(0,0,0,0.1); border-radius: 8px; min-height: 40px;
+        .history-ribbon {
+            margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px;
         }
-        .log-item { background: #334155; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; }
+        .h-chip { background: #2d3748; padding: 3px 9px; border-radius: 5px; font-size: 0.8rem; color: #cbd5e0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <header><h1>Dozens Tracker</h1></header>
+        <header>
+            <h1>PAIR PREDICTOR</h1>
+        </header>
 
-        <div class="engine-card">
-            <div id="status" class="status-light">WAITING FOR DATA</div>
+        <div class="prediction-card">
+            <div id="status" class="status-header">Scanning History...</div>
             
-            <div class="prediction-display">
-                <div class="dozen-slot" id="s1"><span class="tag">Next Unique</span><span class="val">-</span></div>
-                <div class="dozen-slot" id="s2"><span class="tag">Second Unique</span><span class="val">-</span></div>
+            <div class="dozen-pair-display">
+                <div class="dozen-box" id="box1">
+                    <span class="num-val">-</span>
+                    <span class="label">DOZEN A</span>
+                </div>
+                <div class="dozen-box" id="box2">
+                    <span class="num-val">-</span>
+                    <span class="label">DOZEN B</span>
+                </div>
             </div>
 
-            <div class="sequence-footer">
-                Pattern: <span id="patternStr" style="color:var(--primary); font-weight:bold;">---</span>
+            <div class="seq-tag">
+                Sequence: <strong id="seqView" style="color: white;">---</strong>
             </div>
         </div>
 
-        <div class="input-bar">
-            <input type="text" id="bulk" class="text-input" placeholder="Bulk input numbers...">
-            <button id="addBtn" class="btn btn-go">LOAD</button>
-            <button id="clrBtn" class="btn btn-reset">CLR</button>
+        <div class="input-area">
+            <input type="text" id="bulk" class="bulk-box" placeholder="12, 35, 1, 0, 22...">
+            <button id="loadBtn" class="btn btn-load">LOAD</button>
+            <button id="clrBtn" class="btn btn-clr">CLR</button>
         </div>
 
-        <div class="grid" id="numberPad"></div>
-        <div class="log" id="historyLog"></div>
-        
-        <p style="font-size: 0.7rem; color: #64748b; margin-top: 15px; text-align: center;">
-            Logic: Finds last 3-dozen sequence, skips repeats to find 2 unique subsequent dozens.
-        </p>
+        <div class="numpad" id="numpad"></div>
+        <div class="history-ribbon" id="history"></div>
     </div>
 
     <script>
         let history = [];
 
-        function getDozen(n) {
+        function getDoz(n) {
             if (n === 0) return 0;
             return Math.ceil(n / 12);
         }
 
-        function createPad() {
-            const pad = document.getElementById('numberPad');
-            const zero = document.createElement('button');
-            zero.className = 'num zero'; zero.textContent = '0';
-            zero.onclick = () => add(0);
-            pad.appendChild(zero);
+        function init() {
+            const pad = document.getElementById('numpad');
+            const z = document.createElement('button');
+            z.className = 'n-btn zero'; z.textContent = '0';
+            z.onclick = () => addNum(0);
+            pad.appendChild(z);
             for(let i=1; i<=36; i++) {
                 const b = document.createElement('button');
-                b.className = 'num'; b.textContent = i;
-                b.onclick = () => add(i);
+                b.className = 'n-btn'; b.textContent = i;
+                b.onclick = () => addNum(i);
                 pad.appendChild(b);
             }
         }
 
-        function add(n) {
+        function addNum(n) {
             history.push(n);
-            run();
+            update();
         }
 
-        function run() {
-            // Update History List
-            const log = document.getElementById('historyLog');
-            log.innerHTML = history.slice(-18).map(n => `<span class="log-item">${n}</span>`).join('');
+        function update() {
+            // UI History
+            const hDiv = document.getElementById('history');
+            hDiv.innerHTML = history.slice(-15).map(n => `<span class="h-chip">${n}</span>`).join('');
 
             if (history.length < 3) return;
 
-            const dozHistory = history.map(getDozen);
-            const currentPattern = dozHistory.slice(-3);
-            document.getElementById('patternStr').textContent = currentPattern.join(' → ');
+            const dozHist = history.map(getDoz);
+            const last3 = dozHist.slice(-3);
+            document.getElementById('seqView').textContent = last3.join(' → ');
 
-            let uniques = [];
-            let found = false;
+            let pair = [];
+            let matchFound = false;
 
-            // Search history backwards for the most recent sequence match
-            for (let i = dozHistory.length - 4; i >= 0; i--) {
-                if (dozHistory[i] === currentPattern[0] && 
-                    dozHistory[i+1] === currentPattern[1] && 
-                    dozHistory[i+2] === currentPattern[2]) {
+            // Step 1: Search for the 3-dozen sequence match
+            // Starting search index is current length minus 4 (the item just before the current sequence)
+            for (let i = dozHist.length - 4; i >= 0; i--) {
+                if (dozHist[i] === last3[0] && 
+                    dozHist[i+1] === last3[1] && 
+                    dozHist[i+2] === last3[2]) {
                     
-                    // Sequence matched! Now extract 2 UNIQUE dozens following it
-                    for (let j = i + 3; j < dozHistory.length - 3; j++) {
-                        let candidate = dozHistory[j];
-                        if (!uniques.includes(candidate)) {
-                            uniques.push(candidate);
+                    // Step 2: Extract exactly TWO UNIQUE dozens that followed that match
+                    for (let j = i + 3; j < dozHist.length - 3; j++) {
+                        let dozenVal = dozHist[j];
+                        
+                        // Rule: Add only if it's not already in our pair (Skip repeats)
+                        if (!pair.includes(dozenVal)) {
+                            pair.push(dozenVal);
                         }
-                        if (uniques.length === 2) break;
-                    }
 
-                    if (uniques.length > 0) {
-                        found = true;
-                        break; // Stop at the most recent historical occurrence
+                        // Stop once we have exactly 2 unique dozens
+                        if (pair.length === 2) {
+                            matchFound = true;
+                            break;
+                        }
                     }
+                    
+                    if (matchFound) break; // Use the most recent completed pair
                 }
             }
 
-            render(found, uniques);
+            render(matchFound, pair);
         }
 
-        function render(isMatch, results) {
+        function render(isMatch, pairData) {
             const status = document.getElementById('status');
-            const s1 = document.getElementById('s1');
-            const s2 = document.getElementById('s2');
+            const b1 = document.getElementById('box1');
+            const b2 = document.getElementById('box2');
             
             if (isMatch) {
-                status.textContent = "SEQUENCE MATCHED";
+                status.textContent = "MATCH FOUND - BET ON PAIR";
                 status.classList.add('active');
                 
-                s1.querySelector('.val').textContent = results[0] || "?";
-                s1.classList.add('highlight');
+                b1.querySelector('.num-val').textContent = pairData[0];
+                b1.classList.add('hit');
                 
-                s2.querySelector('.val').textContent = results[1] || "?";
-                s2.classList.toggle('highlight', results.length > 1);
+                b2.querySelector('.num-val').textContent = pairData[1];
+                b2.classList.add('hit');
             } else {
-                status.textContent = history.length < 3 ? "NEED MORE SPINS" : "PATTERN NOT FOUND";
+                status.textContent = "Searching Sequence...";
                 status.classList.remove('active');
-                s1.querySelector('.val').textContent = "-";
-                s2.querySelector('.val').textContent = "-";
-                s1.classList.remove('highlight');
-                s2.classList.remove('highlight');
+                
+                b1.querySelector('.num-val').textContent = "-";
+                b1.classList.remove('hit');
+                
+                b2.querySelector('.num-val').textContent = "-";
+                b2.classList.remove('hit');
             }
         }
 
-        document.getElementById('addBtn').onclick = () => {
+        document.getElementById('loadBtn').onclick = () => {
             const val = document.getElementById('bulk').value;
             const nums = val.split(/[ ,]+/).map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n>=0 && n<=36);
             history = [...history, ...nums];
-            run();
+            update();
             document.getElementById('bulk').value = '';
         };
 
         document.getElementById('clrBtn').onclick = () => {
             history = [];
-            document.getElementById('patternStr').textContent = "---";
-            run();
+            document.getElementById('seqView').textContent = "---";
+            update();
         };
 
-        window.onload = createPad;
+        window.onload = init;
     </script>
 </body>
 </html>
