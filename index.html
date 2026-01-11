@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roulette Sequence Pattern Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: #0d1b2a;
+            color: #e0e1dd;
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px 0;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            font-size: 1.6rem;
+            color: #4cc9f0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 0.85rem;
+            color: #8d99ae;
+        }
+
+        /* --- Pattern Section --- */
+        .prediction-card {
+            background: linear-gradient(145deg, #1b263b, #0d1b2a);
+            border: 2px solid #4361ee;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
+        .match-status {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #72efdd;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .predicted-dozens-wrap {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .dozen-box {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #4361ee;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .dozen-box.empty {
+            background: rgba(255,255,255,0.05);
+            border: 1px dashed #4361ee;
+            color: #3f37c9;
+        }
+
+        .val { font-size: 2rem; color: white; }
+        .lab { font-size: 0.6rem; color: rgba(255,255,255,0.7); }
+
+        .sequence-bar {
+            background: rgba(0,0,0,0.3);
+            padding: 8px;
+            border-radius: 50px;
+            display: inline-flex;
+            gap: 10px;
+            font-size: 0.8rem;
+            border: 1px solid #1b4965;
+            margin-top: 10px;
+        }
+
+        /* --- Controls & Input --- */
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .initial-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #1b4965;
+            background: #1b263b;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .action-btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .load-btn { background: #4361ee; color: white; }
+        .clear-btn { background: #f72585; color: white; }
+        
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            background: rgba(13, 27, 42, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #1b4965;
+            margin-bottom: 15px;
+        }
+        
+        .number-btn {
+            aspect-ratio: 1;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #1b263b;
+            color: white;
+            border: 1px solid #4361ee;
+        }
+        
+        .number-btn.zero { background: #2d6a4f; border-color: #52b788; }
+        .number-btn:active { background: #72efdd; color: #0d1b2a; }
+
+        .history-section {
+            background: rgba(13, 27, 42, 0.9);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #1b4965;
+        }
+
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .history-item {
+            background: #3a0ca3;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .info-panel {
+            margin-top: 15px;
+            padding: 15px;
+            font-size: 0.8rem;
+            color: #8d99ae;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .container { max-width: 500px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Pattern Engine</h1>
+            <p class="subtitle">3-Sequence Matcher & Dozen Predictor</p>
+        </header>
+
+        <div class="prediction-card">
+            <div id="matchLabel" class="match-status">Waiting for Sequence...</div>
+            
+            <div class="predicted-dozens-wrap">
+                <div class="dozen-box" id="pred1">
+                    <div class="lab">NEXT</div>
+                    <div class="val" id="val1">?</div>
+                </div>
+                <div class="dozen-box" id="pred2">
+                    <div class="lab">FOLLOW</div>
+                    <div class="val" id="val2">?</div>
+                </div>
+            </div>
+
+            <div class="sequence-bar">
+                <span>Current Sequence:</span>
+                <strong id="currentSeqDisplay">---</strong>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <input type="text" id="initialInput" class="initial-input" placeholder="Bulk: 25, 1, 16...">
+            <button id="loadBtn" class="action-btn load-btn">Load</button>
+            <button id="clearBtn" class="action-btn clear-btn">CLR</button>
+        </div>
+
+        <div class="number-grid" id="numberGrid"></div>
+
+        <div class="history-section">
+            <div class="match-status" style="text-align: left; color: #4cc9f0;">Number History</div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+
+        <div class="info-panel">
+            <strong>How it works:</strong> If you enter a sequence (e.g., Dozen 3, 1, 2) that has happened before, the tool shows the two dozens that followed it last time.
+        </div>
+    </div>
+
+    <script>
+        let history = [];
+
+        function getDozen(n) {
+            if (n === 0) return 0;
+            if (n <= 12) return 1;
+            if (n <= 24) return 2;
+            return 3;
+        }
+
+        function initGrid() {
+            const grid = document.getElementById('numberGrid');
+            const z = document.createElement('button');
+            z.className = 'number-btn zero'; z.textContent = '0';
+            z.onclick = () => addNum(0);
+            grid.appendChild(z);
+            for(let i=1; i<=36; i++) {
+                const b = document.createElement('button');
+                b.className = 'number-btn'; b.textContent = i;
+                b.onclick = () => addNum(i);
+                grid.appendChild(b);
+            }
+        }
+
+        function addNum(n) {
+            history.push(n);
+            updateLogic();
+        }
+
+        function updateLogic() {
+            // Update History UI
+            const hList = document.getElementById('historyList');
+            hList.innerHTML = history.slice(-20).map(n => `<div class="history-item">${n}</div>`).join('');
+            
+            if (history.length < 3) return;
+
+            // Map full history to dozens
+            const dozensHistory = history.map(getDozen);
+            
+            // Get last 3 dozens
+            const last3 = dozensHistory.slice(-3);
+            document.getElementById('currentSeqDisplay').textContent = last3.join(' → ');
+
+            // Find pattern in history
+            let foundMatch = false;
+            let p1 = '?', p2 = '?';
+
+            // Start searching from the beginning up to the point where a match could exist followed by 2 results
+            // We search backwards from the point before the current sequence to find the LATEST occurrence
+            for (let i = dozensHistory.length - 4; i >= 0; i--) {
+                if (dozensHistory[i] === last3[0] && 
+                    dozensHistory[i+1] === last3[1] && 
+                    dozensHistory[i+2] === last3[2]) {
+                    
+                    // Found a match! Check if there are 1 or 2 results after it
+                    if (i + 3 < dozensHistory.length - 3) {
+                        p1 = dozensHistory[i+3];
+                        foundMatch = true;
+                    }
+                    if (i + 4 < dozensHistory.length - 3) {
+                        p2 = dozensHistory[i+4];
+                    }
+                    
+                    if(foundMatch) break; // Use the most recent pattern found
+                }
+            }
+
+            const label = document.getElementById('matchLabel');
+            const v1 = document.getElementById('val1');
+            const v2 = document.getElementById('val2');
+            const box1 = document.getElementById('pred1');
+            const box2 = document.getElementById('pred2');
+
+            if (foundMatch) {
+                label.textContent = "Pattern Match Found!";
+                label.style.color = "#72efdd";
+                v1.textContent = p1;
+                v2.textContent = p2;
+                box1.classList.remove('empty');
+                box2.classList.remove('empty');
+            } else {
+                label.textContent = "Searching for Sequence...";
+                label.style.color = "#8d99ae";
+                v1.textContent = "?";
+                v2.textContent = "?";
+                box1.classList.add('empty');
+                box2.classList.add('empty');
+            }
+        }
+
+        document.getElementById('loadBtn').onclick = () => {
+            const input = document.getElementById('initialInput').value;
+            const nums = input.split(/[ ,]+/).map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n>=0 && n<=36);
+            history = [...history, ...nums];
+            updateLogic();
+            document.getElementById('initialInput').value = '';
+        };
+
+        document.getElementById('clearBtn').onclick = () => {
+            history = [];
+            document.getElementById('currentSeqDisplay').textContent = "---";
+            updateLogic();
+        };
+
+        window.onload = initGrid;
+    </script>
+</body>
+</html>
