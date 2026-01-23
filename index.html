@@ -3,259 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dozen Pair Pattern Engine</title>
+    <title>Dozens Pattern Tracker</title>
     <style>
-        :root {
-            --bg: #0b0f19;
-            --card: #161e2d;
-            --primary: #00d2ff;
-            --accent: #00ff88;
-            --danger: #ff0055;
-            --text: #ffffff;
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; }
-
-        header { text-align: center; margin-bottom: 25px; }
-        h1 { font-size: 1.5rem; color: var(--primary); letter-spacing: 1.5px; }
-
-        /* Prediction Dashboard */
-        .prediction-card {
-            background: var(--card);
-            border: 2px solid #2d3748;
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-        }
-
-        .status-header {
-            font-size: 0.75rem;
-            font-weight: 800;
-            letter-spacing: 2px;
+        body { background: #0d1b2a; color: #e0e1dd; padding: 10px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { text-align: center; padding: 15px; }
+        h1 { color: #4cc9f0; }
+        
+        /* New Pattern Section Styles */
+        .pattern-section {
+            background: rgba(76, 201, 240, 0.1);
+            border: 2px solid #4cc9f0;
+            border-radius: 12px;
+            padding: 15px;
             margin-bottom: 15px;
-            color: #718096;
-            text-transform: uppercase;
+            text-align: center;
         }
-
-        .status-header.active { color: var(--accent); }
-
-        .dozen-pair-display {
+        .pattern-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #72efdd;
+            margin: 10px 0;
+            letter-spacing: 5px;
+        }
+        .prediction-box {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .next-dz {
+            background: #f72585;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            animation: pulse 2s infinite;
         }
 
-        .dozen-box {
-            width: 100px;
-            height: 100px;
-            background: #0b0f19;
-            border: 3px solid #2d3748;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .dozen-box.hit {
-            border-color: var(--primary);
-            background: rgba(0, 210, 255, 0.1);
-            transform: scale(1.05);
-        }
-
-        .dozen-box .num-val { font-size: 3rem; font-weight: 900; }
-        .dozen-box .label { font-size: 0.6rem; color: #4a5568; margin-top: -5px; }
-
-        .seq-tag {
-            background: rgba(0,0,0,0.3);
-            padding: 8px 15px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            color: #a0aec0;
-            display: inline-block;
-        }
-
-        /* Inputs */
-        .input-area { display: flex; gap: 10px; margin-bottom: 15px; }
-        .bulk-box { 
-            flex: 1; background: var(--card); border: 1px solid #2d3748;
-            border-radius: 10px; padding: 12px; color: white;
-        }
-        .btn { padding: 12px 20px; border-radius: 10px; border: none; font-weight: 900; cursor: pointer; }
-        .btn-load { background: var(--primary); color: #000; }
-        .btn-clr { background: var(--danger); color: #fff; }
-
-        .numpad {
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px;
-            background: var(--card); padding: 15px; border-radius: 15px;
-        }
-        .n-btn {
-            aspect-ratio: 1; background: #2d3748; border: none; color: white;
-            font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 1.1rem;
-        }
-        .n-btn.zero { background: #2f855a; }
-        .n-btn:active { background: var(--primary); color: #000; }
-
-        .history-ribbon {
-            margin-top: 20px; display: flex; flex-wrap: wrap; gap: 6px;
-        }
-        .h-chip { background: #2d3748; padding: 3px 9px; border-radius: 5px; font-size: 0.8rem; color: #cbd5e0; }
+        /* Original Styles */
+        .results-section { background: rgba(13, 27, 42, 0.9); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 2px solid #1b4965; }
+        .section-title { color: #72efdd; margin-bottom: 12px; font-size: 1.1rem; text-align: center; border-bottom: 1px solid #4361ee; }
+        .number-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 15px; }
+        .number-btn { aspect-ratio: 1; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 1.1rem; }
+        .zero { background: #7209b7; } .even { background: #3a0ca3; } .odd { background: #4361ee; }
+        .clicked { background: #f72585 !important; }
+        .history-list { background: #1b263b; border-radius: 8px; padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; max-height: 100px; overflow-y: auto; }
+        .history-item { background: #4361ee; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #4361ee; background: #1b263b; color: white; }
+        button.action { padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+        .load { background: #4361ee; color: white; } .clear { background: #f72585; color: white; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>PAIR PREDICTOR</h1>
+            <h1>Dozens Pattern Matcher</h1>
+            <p>Finds what followed the current 3-dozen pattern in your history</p>
         </header>
 
-        <div class="prediction-card">
-            <div id="status" class="status-header">Scanning History...</div>
-            
-            <div class="dozen-pair-display">
-                <div class="dozen-box" id="box1">
-                    <span class="num-val">-</span>
-                    <span class="label">DOZEN A</span>
-                </div>
-                <div class="dozen-box" id="box2">
-                    <span class="num-val">-</span>
-                    <span class="label">DOZEN B</span>
-                </div>
-            </div>
-
-            <div class="seq-tag">
-                Sequence: <strong id="seqView" style="color: white;">---</strong>
+        <div class="pattern-section">
+            <div class="section-title">Current 3-Dozen Pattern</div>
+            <div id="currentPattern" class="pattern-display">WAITING...</div>
+            <div class="section-title">History Match: Next 2 Dozens</div>
+            <div id="predictionResults" class="prediction-box">
+                <span style="color: #8d99ae; font-style: italic;">Need more history to match pattern...</span>
             </div>
         </div>
 
-        <div class="input-area">
-            <input type="text" id="bulk" class="bulk-box" placeholder="12, 35, 1, 0, 22...">
-            <button id="loadBtn" class="btn btn-load">LOAD</button>
-            <button id="clrBtn" class="btn btn-clr">CLR</button>
+        <div class="input-section">
+            <div class="input-row">
+                <input type="text" id="initialInput" placeholder="Paste history: 12,23,1,5...">
+                <button onclick="loadNumbers()" class="action load">Load</button>
+                <button onclick="clearAll()" class="action clear">Clear</button>
+            </div>
         </div>
 
-        <div class="numpad" id="numpad"></div>
-        <div class="history-ribbon" id="history"></div>
+        <div class="number-grid" id="numberGrid"></div>
+
+        <div class="results-section">
+            <div class="section-title">Last Numbers History</div>
+            <div id="historyList" class="history-list"></div>
+        </div>
     </div>
 
     <script>
+        const DOZENS = [
+            [1,2,3,4,5,6,7,8,9,10,11,12],
+            [13,14,15,16,17,18,19,20,21,22,23,24],
+            [25,26,27,28,29,30,31,32,33,34,35,36]
+        ];
         let history = [];
 
-        function getDoz(n) {
-            if (n === 0) return 0;
-            return Math.ceil(n / 12);
-        }
-
-        function init() {
-            const pad = document.getElementById('numpad');
-            const z = document.createElement('button');
-            z.className = 'n-btn zero'; z.textContent = '0';
-            z.onclick = () => addNum(0);
-            pad.appendChild(z);
+        function initGrid() {
+            const grid = document.getElementById('numberGrid');
+            const btn0 = `<button class="number-btn zero" onclick="addNumber(0)">0</button>`;
+            let btns = btn0;
             for(let i=1; i<=36; i++) {
-                const b = document.createElement('button');
-                b.className = 'n-btn'; b.textContent = i;
-                b.onclick = () => addNum(i);
-                pad.appendChild(b);
+                btns += `<button class="number-btn ${i%2===0?'even':'odd'}" onclick="addNumber(${i})">${i}</button>`;
             }
+            grid.innerHTML = btns;
         }
 
-        function addNum(n) {
+        function getDz(n) {
+            if (n === 0) return 0;
+            if (n >= 1 && n <= 12) return 1;
+            if (n >= 13 && n <= 24) return 2;
+            if (n >= 25 && n <= 36) return 3;
+            return null;
+        }
+
+        function addNumber(n) {
             history.push(n);
-            update();
+            updateUI();
         }
 
-        function update() {
-            // UI History
-            const hDiv = document.getElementById('history');
-            hDiv.innerHTML = history.slice(-15).map(n => `<span class="h-chip">${n}</span>`).join('');
+        function loadNumbers() {
+            const val = document.getElementById('initialInput').value;
+            val.split(',').forEach(s => {
+                let n = parseInt(s.trim());
+                if(!isNaN(n)) history.push(n);
+            });
+            updateUI();
+            document.getElementById('initialInput').value = '';
+        }
 
-            if (history.length < 3) return;
+        function clearAll() {
+            history = [];
+            updateUI();
+        }
 
-            const dozHist = history.map(getDoz);
-            const last3 = dozHist.slice(-3);
-            document.getElementById('seqView').textContent = last3.join(' → ');
+        function updateUI() {
+            // Update History List
+            const list = document.getElementById('historyList');
+            list.innerHTML = history.map(n => `<span class="history-item">${n}</span>`).join('');
+            
+            // Analyze Patterns
+            analyzePattern();
+        }
 
-            let pair = [];
-            let matchFound = false;
+        function analyzePattern() {
+            // 1. Convert history to dozen sequence (ignore 0s for pattern matching)
+            const dzSequence = history.map(n => getDz(n)).filter(d => d !== 0);
+            
+            if (dzSequence.length < 3) {
+                document.getElementById('currentPattern').innerText = "NEED 3 NUMBERS";
+                return;
+            }
 
-            // Step 1: Search for the 3-dozen sequence match
-            // Starting search index is current length minus 4 (the item just before the current sequence)
-            for (let i = dozHist.length - 4; i >= 0; i--) {
-                if (dozHist[i] === last3[0] && 
-                    dozHist[i+1] === last3[1] && 
-                    dozHist[i+2] === last3[2]) {
+            // 2. Get the last 3 dozens
+            const lastThree = dzSequence.slice(-3);
+            const patternStr = lastThree.join('-');
+            document.getElementById('currentPattern').innerText = patternStr;
+
+            // 3. Search history for previous occurrences
+            // We look from the beginning up to the point before the current pattern started
+            let foundFollowers = [];
+
+            for (let i = 0; i <= dzSequence.length - 6; i++) {
+                // Check if current slice matches the lastThree pattern
+                if (dzSequence[i] === lastThree[0] && 
+                    dzSequence[i+1] === lastThree[1] && 
+                    dzSequence[i+2] === lastThree[2]) {
                     
-                    // Step 2: Extract exactly TWO UNIQUE dozens that followed that match
-                    for (let j = i + 3; j < dozHist.length - 3; j++) {
-                        let dozenVal = dozHist[j];
-                        
-                        // Rule: Add only if it's not already in our pair (Skip repeats)
-                        if (!pair.includes(dozenVal)) {
-                            pair.push(dozenVal);
-                        }
-
-                        // Stop once we have exactly 2 unique dozens
-                        if (pair.length === 2) {
-                            matchFound = true;
-                            break;
-                        }
-                    }
-                    
-                    if (matchFound) break; // Use the most recent completed pair
+                    // Grab the next 2 dozens that occurred after this match
+                    foundFollowers.push([dzSequence[i+3], dzSequence[i+4]]);
                 }
             }
 
-            render(matchFound, pair);
-        }
-
-        function render(isMatch, pairData) {
-            const status = document.getElementById('status');
-            const b1 = document.getElementById('box1');
-            const b2 = document.getElementById('box2');
-            
-            if (isMatch) {
-                status.textContent = "MATCH FOUND - BET ON PAIR";
-                status.classList.add('active');
-                
-                b1.querySelector('.num-val').textContent = pairData[0];
-                b1.classList.add('hit');
-                
-                b2.querySelector('.num-val').textContent = pairData[1];
-                b2.classList.add('hit');
+            // 4. Display Results
+            const predDiv = document.getElementById('predictionResults');
+            if (foundFollowers.length > 0) {
+                // Show the most recent occurrence's result
+                const latestMatch = foundFollowers[foundFollowers.length - 1];
+                predDiv.innerHTML = `
+                    <div class="next-dz">Dz ${latestMatch[0]}</div>
+                    <div class="next-dz">Dz ${latestMatch[1]}</div>
+                `;
             } else {
-                status.textContent = "Searching Sequence...";
-                status.classList.remove('active');
-                
-                b1.querySelector('.num-val').textContent = "-";
-                b1.classList.remove('hit');
-                
-                b2.querySelector('.num-val').textContent = "-";
-                b2.classList.remove('hit');
+                predDiv.innerHTML = `<span style="color: #8d99ae;">No previous match for ${patternStr}</span>`;
             }
         }
 
-        document.getElementById('loadBtn').onclick = () => {
-            const val = document.getElementById('bulk').value;
-            const nums = val.split(/[ ,]+/).map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n>=0 && n<=36);
-            history = [...history, ...nums];
-            update();
-            document.getElementById('bulk').value = '';
-        };
-
-        document.getElementById('clrBtn').onclick = () => {
-            history = [];
-            document.getElementById('seqView').textContent = "---";
-            update();
-        };
-
-        window.onload = init;
+        initGrid();
     </script>
 </body>
 </html>
