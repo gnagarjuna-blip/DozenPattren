@@ -3,82 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dozens Pattern Tracker</title>
+    <title>Unique Dozens Pattern Tracker</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: #0d1b2a; color: #e0e1dd; padding: 10px; }
         .container { max-width: 800px; margin: 0 auto; }
-        header { text-align: center; padding: 15px; }
-        h1 { color: #4cc9f0; }
+        header { text-align: center; padding: 10px; }
+        h1 { color: #4cc9f0; font-size: 1.4rem; }
         
-        /* New Pattern Section Styles */
+        /* Pattern Section */
         .pattern-section {
             background: rgba(76, 201, 240, 0.1);
             border: 2px solid #4cc9f0;
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             margin-bottom: 15px;
             text-align: center;
         }
         .pattern-display {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #72efdd;
-            margin: 10px 0;
-            letter-spacing: 5px;
+            margin: 5px 0;
+            letter-spacing: 3px;
         }
         .prediction-box {
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         .next-dz {
             background: #f72585;
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 1.2rem;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 1rem;
             font-weight: bold;
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(247, 37, 133, 0.5);
         }
 
-        /* Original Styles */
-        .results-section { background: rgba(13, 27, 42, 0.9); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 2px solid #1b4965; }
-        .section-title { color: #72efdd; margin-bottom: 12px; font-size: 1.1rem; text-align: center; border-bottom: 1px solid #4361ee; }
-        .number-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; margin-bottom: 15px; }
-        .number-btn { aspect-ratio: 1; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; font-size: 1.1rem; }
-        .zero { background: #7209b7; } .even { background: #3a0ca3; } .odd { background: #4361ee; }
-        .clicked { background: #f72585 !important; }
-        .history-list { background: #1b263b; border-radius: 8px; padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; max-height: 100px; overflow-y: auto; }
-        .history-item { background: #4361ee; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; }
-        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #4361ee; background: #1b263b; color: white; }
-        button.action { padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
-        .load { background: #4361ee; color: white; } .clear { background: #f72585; color: white; }
+        /* COMPACT NUMBER GRID */
+        .number-grid { 
+            display: grid; 
+            grid-template-columns: repeat(12, 1fr); 
+            gap: 4px; 
+            margin-bottom: 15px; 
+        }
+        .number-btn { 
+            aspect-ratio: 1; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 0.8rem; 
+        }
         
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        .zero { background: #7209b7; } 
+        .even { background: #3a0ca3; } 
+        .odd { background: #4361ee; }
+        .clicked { background: #f72585 !important; }
+
+        .results-section { background: rgba(13, 27, 42, 0.9); border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 2px solid #1b4965; }
+        .section-title { color: #72efdd; margin-bottom: 8px; font-size: 0.9rem; text-align: center; border-bottom: 1px solid #4361ee; text-transform: uppercase; }
+        
+        .history-list { background: #1b263b; border-radius: 8px; padding: 10px; display: flex; flex-wrap: wrap; gap: 5px; max-height: 80px; overflow-y: auto; }
+        .history-item { background: #4361ee; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; }
+        
+        .input-row { display: flex; gap: 8px; margin-bottom: 15px; }
+        input { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #4361ee; background: #1b263b; color: white; font-size: 0.9rem; }
+        button.action { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .load { background: #4361ee; color: white; } 
+        .clear { background: #f72585; color: white; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Dozens Pattern Matcher</h1>
-            <p>Finds what followed the current 3-dozen pattern in your history</p>
         </header>
 
         <div class="pattern-section">
             <div class="section-title">Current 3-Dozen Pattern</div>
             <div id="currentPattern" class="pattern-display">WAITING...</div>
-            <div class="section-title">History Match: Next 2 Dozens</div>
+            <div class="section-title">Unique History Targets</div>
             <div id="predictionResults" class="prediction-box">
-                <span style="color: #8d99ae; font-style: italic;">Need more history to match pattern...</span>
+                <span style="color: #8d99ae; font-style: italic; font-size: 0.8rem;">Need more data...</span>
             </div>
         </div>
 
         <div class="input-section">
             <div class="input-row">
-                <input type="text" id="initialInput" placeholder="Paste history: 12,23,1,5...">
+                <input type="text" id="initialInput" placeholder="Paste history (e.g. 12,23,1...)">
                 <button onclick="loadNumbers()" class="action load">Load</button>
                 <button onclick="clearAll()" class="action clear">Clear</button>
             </div>
@@ -87,7 +104,7 @@
         <div class="number-grid" id="numberGrid"></div>
 
         <div class="results-section">
-            <div class="section-title">Last Numbers History</div>
+            <div class="section-title">Number History</div>
             <div id="historyList" class="history-list"></div>
         </div>
     </div>
@@ -139,16 +156,13 @@
         }
 
         function updateUI() {
-            // Update History List
             const list = document.getElementById('historyList');
             list.innerHTML = history.map(n => `<span class="history-item">${n}</span>`).join('');
-            
-            // Analyze Patterns
             analyzePattern();
         }
 
         function analyzePattern() {
-            // 1. Convert history to dozen sequence (ignore 0s for pattern matching)
+            // Ignore 0 for the dozen pattern logic
             const dzSequence = history.map(n => getDz(n)).filter(d => d !== 0);
             
             if (dzSequence.length < 3) {
@@ -156,37 +170,47 @@
                 return;
             }
 
-            // 2. Get the last 3 dozens
             const lastThree = dzSequence.slice(-3);
             const patternStr = lastThree.join('-');
             document.getElementById('currentPattern').innerText = patternStr;
 
-            // 3. Search history for previous occurrences
-            // We look from the beginning up to the point before the current pattern started
-            let foundFollowers = [];
+            let foundUniquePair = null;
 
-            for (let i = 0; i <= dzSequence.length - 6; i++) {
-                // Check if current slice matches the lastThree pattern
+            // Search history from the beginning for the pattern
+            // Stop searching before reaching the current active pattern
+            for (let i = 0; i <= dzSequence.length - 5; i++) {
                 if (dzSequence[i] === lastThree[0] && 
                     dzSequence[i+1] === lastThree[1] && 
                     dzSequence[i+2] === lastThree[2]) {
                     
-                    // Grab the next 2 dozens that occurred after this match
-                    foundFollowers.push([dzSequence[i+3], dzSequence[i+4]]);
+                    // Pattern Matched! Now find the next TWO UNIQUE dozens
+                    let firstFollower = dzSequence[i+3];
+                    let secondFollower = null;
+
+                    // Start looking from the very next number for a different dozen
+                    for (let j = i + 4; j < dzSequence.length; j++) {
+                        if (dzSequence[j] !== firstFollower) {
+                            secondFollower = dzSequence[j];
+                            break;
+                        }
+                    }
+
+                    // If we found a second unique dozen, save it
+                    // We keep iterating so 'foundUniquePair' always stores the MOST RECENT match
+                    if (firstFollower !== undefined && secondFollower !== null) {
+                        foundUniquePair = [firstFollower, secondFollower];
+                    }
                 }
             }
 
-            // 4. Display Results
             const predDiv = document.getElementById('predictionResults');
-            if (foundFollowers.length > 0) {
-                // Show the most recent occurrence's result
-                const latestMatch = foundFollowers[foundFollowers.length - 1];
+            if (foundUniquePair) {
                 predDiv.innerHTML = `
-                    <div class="next-dz">Dz ${latestMatch[0]}</div>
-                    <div class="next-dz">Dz ${latestMatch[1]}</div>
+                    <div class="next-dz">Dz ${foundUniquePair[0]}</div>
+                    <div class="next-dz">Dz ${foundUniquePair[1]}</div>
                 `;
             } else {
-                predDiv.innerHTML = `<span style="color: #8d99ae;">No previous match for ${patternStr}</span>`;
+                predDiv.innerHTML = `<span style="color: #8d99ae; font-size: 0.8rem;">No previous unique match for ${patternStr}</span>`;
             }
         }
 
